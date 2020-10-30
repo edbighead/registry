@@ -1,0 +1,32 @@
+{{- if .Values.persistance.enabled }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "registry.fullname" . }}-pv
+  labels:
+    {{- include "registry.labels" . | nindent 4 }}
+    type: local
+spec:
+  storageClassName: {{ .Values.persistance.storageClassName }}
+  capacity:
+    storage: {{ .Values.persistance.volumeSize }}
+  accessModes:
+    - {{ .Values.persistance.accessModes }}
+  hostPath:
+    path: {{ .Values.persistance.hostPath }}
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "registry.fullname" . }}-pvc
+  labels:
+    {{- include "registry.labels" . | nindent 4 }}
+spec:
+  storageClassName: {{ .Values.persistance.storageClassName }}
+  accessModes:
+    - {{ .Values.persistance.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.persistance.claimSize }}
+{{- end -}}

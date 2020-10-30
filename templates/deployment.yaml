@@ -24,7 +24,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "registry.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -35,7 +34,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 5000
               protocol: TCP
           livenessProbe:
             httpGet:
@@ -47,6 +46,30 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          env:
+          {{- if .Values.auth.enabled }}
+            - name: REGISTRY_AUTH
+              value: "htpasswd"
+            - name: REGISTRY_AUTH_HTPASSWD_REALM
+              value: "Registry Realm"
+            - name: REGISTRY_AUTH_HTPASSWD_PATH
+              value: "/auth/htpasswd"
+            - name: REGISTRY_HTTP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "registry.fullname" . }}-secret
+                  key: httpSecret
+          {{- end }}
+          volumeMounts:
+          {{- if .Values.auth.enabled }}
+            - name: auth
+              mountPath: /auth
+              readOnly: true
+          {{- end -}}
+          {{- if .Values.persistance.enabled }}
+            - name: pv-storage
+              mountPath: "/var/lib/registry"
+          {{- end -}}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -59,3 +82,17 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        {{- if .Values.auth.enabled }}
+        - name: auth
+          secret:
+            secretName: {{ include "registry.fullname" . }}-secret
+            items:
+            - key: htpasswd
+              path: htpasswd
+        {{- end }}
+        {{- if .Values.persistance.enabled }}
+        - name: pv-storage
+          persistentVolumeClaim:
+            claimName: {{ include "registry.fullname" . }}-pvc
+        {{- end -}}
