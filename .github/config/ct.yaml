@@ -1,0 +1,6 @@
+target-branch: main
+remote: origin
+chart-dirs:
+  - charts
+all: true
+check-version-increment: true
