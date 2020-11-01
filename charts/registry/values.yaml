@@ -96,3 +96,9 @@ cron:
     storage:
       filesystem:
         rootdirectory: /var/lib/registry
+
+redis:
+  enabled: true
+  existingSecret: redis-secret
+  existingSecretPasswordKey: redisPassword
+  secretPassword: "changeme"
