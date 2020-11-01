@@ -74,7 +74,7 @@ affinity: {}
 
 secrets:
   htpasswd: "user:$2y$05$mcmGaBUrPeLU8Uj1Rl6hjOZJBYE6FW9c19Y2JH705Mfh7uxYLRzXa"
-  # use user:$2y$05$mcmGaBUrPeLU8Uj1Rl6hjOZJBYE6FW9c19Y2JH705Mfh7uxYLRzXa for user:password login
+  # user:password credentials
 
 storage:
   type: filesystem  # filesystem or s3
@@ -82,7 +82,7 @@ storage:
     s3AccessKey: xxx
     s3SecretKey: xxx
     region: us-east-1
-    bucketName: test-s3-docker-backend999
+    bucketName: xxx
 
 persistance:
   storageClassName: manual
