@@ -1,4 +1,4 @@
-{{ if .Values.cron.enabled }}
+{{ if and (.Values.cron.enabled) (eq .Values.storage.type "filesystem") }}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:

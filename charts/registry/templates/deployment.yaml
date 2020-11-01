@@ -71,6 +71,24 @@ spec:
                   name: redis-secret
                   key: redisPassword
           {{- end }}
+          {{- if eq .Values.storage.type "s3" }}
+            - name: REGISTRY_STORAGE
+              value: s3
+            - name: REGISTRY_STORAGE_S3_ACCESSKEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "registry.fullname" . }}-secret
+                  key: s3AccessKey
+            - name: REGISTRY_STORAGE_S3_SECRETKEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "registry.fullname" . }}-secret
+                  key: s3SecretKey
+            - name: REGISTRY_STORAGE_S3_REGION
+              value: {{ required "region should be defined" .Values.storage.s3.region }}
+            - name: REGISTRY_STORAGE_S3_BUCKET
+              value: {{ required "bucket name should be defined" .Values.storage.s3.bucketName }}
+            {{- end }}
           volumeMounts:
           {{- if .Values.auth.enabled }}
             - name: auth
