@@ -22,5 +22,6 @@ jobs:
         id: lint
         uses: helm/chart-testing-action@v1.1.0
         with:
-          config: .github/config/cf.yaml
-          command: lint 
+          config: .github/config/ct.yaml
+          image: quay.io/helmpack/chart-testing:v3.2.0
+          command: lint

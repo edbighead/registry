@@ -1,4 +1,4 @@
-{{- if .Values.persistance.enabled }}
+{{- if eq .Values.storage.type "filesystem" }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:

@@ -1,0 +1,36 @@
+{{ if .Values.cron.enabled }}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "registry.fullname" . }}-garbage-collect
+spec:
+  schedule: {{ .Values.cron.schedule | quote }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: garbage-collect
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            command: ["registry"]
+            args:
+            - garbage-collect
+            - /opt/cron/config.yml
+            volumeMounts:
+              - name: cron-config-volume
+                mountPath: /opt/cron
+              {{- if eq .Values.storage.type "filesystem" }}
+              - name: pv-storage
+                mountPath: "/var/lib/registry"
+              {{- end }}
+          restartPolicy: Never
+          volumes:
+            - name: cron-config-volume
+              configMap:
+                name: {{ include "registry.fullname" . }}-gc-configmap
+            {{- if eq .Values.storage.type "filesystem" }}
+            - name: pv-storage
+              persistentVolumeClaim:
+                claimName: {{ include "registry.fullname" . }}-pvc
+            {{- end -}}
+{{- end -}}

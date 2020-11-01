@@ -65,8 +65,8 @@ spec:
             - name: auth
               mountPath: /auth
               readOnly: true
-          {{- end -}}
-          {{- if .Values.persistance.enabled }}
+          {{- end }}
+          {{- if eq .Values.storage.type "filesystem" }}
             - name: pv-storage
               mountPath: "/var/lib/registry"
           {{- end -}}
@@ -91,7 +91,7 @@ spec:
             - key: htpasswd
               path: htpasswd
         {{- end }}
-        {{- if .Values.persistance.enabled }}
+        {{- if eq .Values.storage.type "filesystem" }}
         - name: pv-storage
           persistentVolumeClaim:
             claimName: {{ include "registry.fullname" . }}-pvc
