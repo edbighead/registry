@@ -60,6 +60,17 @@ spec:
                   name: {{ include "registry.fullname" . }}-secret
                   key: httpSecret
           {{- end }}
+          {{- if .Values.redis.enabled }}
+            - name: REGISTRY_STORAGE_CACHE_BLOBDESCRIPTOR
+              value: "redis"
+            - name: REGISTRY_REDIS_ADDR
+              value: "registry-redis-master:6379" 
+            - name: REGISTRY_REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: redisPassword
+          {{- end }}
           volumeMounts:
           {{- if .Values.auth.enabled }}
             - name: auth
